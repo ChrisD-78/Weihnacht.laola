@@ -868,6 +868,33 @@ function renderQuizDay(day, userDayAnswers) {
 
 // Submit quiz answers
 function submitQuiz(day) {
+    if (!currentUser) {
+        console.error('No user logged in');
+        return;
+    }
+    
+    // Prüfe ob das Quiz-Tag heute geöffnet werden darf
+    const now = new Date();
+    const today = now.getDate();
+    const currentMonth = now.getMonth();
+    
+    // Bereits beantwortete Quiz-Tage können nicht erneut beantwortet werden
+    const userDayAnswers = userAnswers[currentUser.id] || {};
+    if (userDayAnswers[`day${day}`]) {
+        alert('Du hast dieses Quiz bereits beantwortet!');
+        showQuizDay();
+        return;
+    }
+    
+    // Neue Quiz-Tage nur wenn:
+    // - Im Dezember UND
+    // - Das Quiz-Tag entspricht dem heutigen Tag (day === today)
+    if (currentMonth !== 11 || day !== today) {
+        alert('Dieses Quiz-Tag ist heute nicht verfügbar!');
+        showQuizDay();
+        return;
+    }
+    
     const form = document.getElementById('quizForm');
     const formData = new FormData(form);
     const dayQuestions = quizQuestions[day - 1];
@@ -1022,15 +1049,28 @@ function showQuizDay() {
         return;
     }
     
-    const today = new Date().getDate();
-    const currentMonth = new Date().getMonth();
-    const maxDay = (currentMonth === 11) ? Math.min(today, 24) : 24;
+    const now = new Date();
+    const today = now.getDate();
+    const currentMonth = now.getMonth(); // 0-11, Dezember = 11
     const userDayAnswers = userAnswers[currentUser.id] || {};
     const quizContent = document.getElementById('quizContent');
     
     if (!quizContent) {
         console.error('Quiz content element not found');
         return;
+    }
+    
+    // Bestimme das maximale freigeschaltete Quiz-Tag
+    // Nur im Dezember: Quiz-Tag 1 am 1.12, Quiz-Tag 2 am 2.12, etc.
+    let maxDay = 0;
+    if (currentMonth === 11) { // Dezember
+        maxDay = Math.min(today, 24);
+    } else if (currentMonth === 10 && today >= 25) {
+        // Ende November: Erlaube alle Quiz-Tage für Tests (optional)
+        maxDay = 24;
+    } else {
+        // Außerhalb des Advents: Keine Quiz-Tage freischalten
+        maxDay = 0;
     }
     
     let html = `
@@ -1040,16 +1080,25 @@ function showQuizDay() {
             <div class="quiz-days-grid">
     `;
     
-    for (let day = 1; day <= maxDay; day++) {
+    // Zeige alle 24 Tage, aber nur bestimmte sind aktivierbar
+    for (let day = 1; day <= 24; day++) {
         const dayKey = `day${day}`;
         const answered = userDayAnswers[dayKey];
         const isToday = day === today && currentMonth === 11;
         
+        // Quiz-Tag kann geöffnet werden wenn:
+        // 1. Er bereits beantwortet wurde (kann wieder angeschaut werden)
+        // 2. Oder er ist heute oder ein vorheriger Tag (day <= maxDay)
+        const canOpen = answered || (day <= maxDay);
+        const isLocked = !canOpen;
+        
         html += `
-            <button class="quiz-day-btn ${answered ? 'answered' : ''} ${isToday ? 'today' : ''}" 
-                    onclick="loadQuizDay(${day})" ${answered ? 'disabled' : ''}>
+            <button class="quiz-day-btn ${answered ? 'answered' : ''} ${isToday ? 'today' : ''} ${isLocked ? 'locked' : ''}" 
+                    onclick="loadQuizDay(${day})" ${isLocked ? 'disabled' : ''}>
                 <span class="quiz-day-number">Tag ${day}</span>
-                ${answered ? `<span class="quiz-day-status">✅ ${userDayAnswers[dayKey].points}/3</span>` : '<span class="quiz-day-status">📝 Offen</span>'}
+                ${answered ? `<span class="quiz-day-status">✅ ${userDayAnswers[dayKey].points}/3</span>` : 
+                  isLocked ? '<span class="quiz-day-status">🔒 Gesperrt</span>' : 
+                  '<span class="quiz-day-status">📝 Offen</span>'}
                 ${isToday ? '<span class="quiz-day-badge">Heute</span>' : ''}
             </button>
         `;
@@ -1065,9 +1114,48 @@ function showQuizDay() {
 
 // Load quiz for specific day
 function loadQuizDay(day) {
+    if (!currentUser) {
+        console.error('No user logged in');
+        return;
+    }
+    
+    // Prüfe ob das Quiz-Tag heute geöffnet werden darf
+    const now = new Date();
+    const today = now.getDate();
+    const currentMonth = now.getMonth();
+    
     const userDayAnswers = userAnswers[currentUser.id] || {};
-    const quizContent = document.getElementById('quizContent');
-    quizContent.innerHTML = renderQuizDay(day, userDayAnswers);
+    const answered = userDayAnswers[`day${day}`];
+    
+    // Bereits beantwortete Quiz-Tage können immer wieder angeschaut werden
+    if (answered) {
+        const quizContent = document.getElementById('quizContent');
+        quizContent.innerHTML = renderQuizDay(day, userDayAnswers);
+        return;
+    }
+    
+    // Neue Quiz-Tage nur wenn:
+    // - Im Dezember UND
+    // - Das Quiz-Tag entspricht dem heutigen Tag (day === today)
+    if (currentMonth === 11 && day === today) {
+        const quizContent = document.getElementById('quizContent');
+        quizContent.innerHTML = renderQuizDay(day, userDayAnswers);
+    } else if (currentMonth === 11 && day < today) {
+        // Im Dezember: Bereits vergangene Quiz-Tage können auch geöffnet werden
+        const quizContent = document.getElementById('quizContent');
+        quizContent.innerHTML = renderQuizDay(day, userDayAnswers);
+    } else {
+        // Quiz-Tag ist noch nicht freigeschaltet
+        const quizContent = document.getElementById('quizContent');
+        quizContent.innerHTML = `
+            <div class="quiz-day-completed">
+                <h3>Tag ${day} - Noch nicht verfügbar 🔒</h3>
+                <p>Dieses Quiz-Tag ist noch nicht freigeschaltet.</p>
+                <p>Komm am ${day}. Dezember wieder, um das Quiz zu machen!</p>
+                <button class="quiz-btn" onclick="showQuizDay()">Zurück zur Übersicht</button>
+            </div>
+        `;
+    }
 }
 
 // Logout
