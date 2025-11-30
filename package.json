@@ -1,0 +1,24 @@
+{
+  "name": "weihnachten-laola",
+  "version": "1.0.0",
+  "description": "Weihnachtskalender für LA OLA mit Neon-Datenbank",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": [
+    "weihnachten",
+    "adventskalender",
+    "laola"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
+

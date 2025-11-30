@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Weihnachten im LA OLA - wo das Chaos Tradition ist, der Wahnsinn zum guten Ton gehört, und das Team trotz allem zusammenhält!">
+    <title>Weihnachten im LA OLA - Das große Weihnachtsdesaster</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="scroll-behavior: auto;">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🎄 Weihnachtszeit</h1>
+            <nav class="nav">
+                <a href="#geschichte" class="nav-link">Adventskalender</a>
+                <a href="#quiz" class="nav-link">Quiz</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Global Snowflakes -->
+    <div class="global-snowflakes" id="globalSnowflakes"></div>
+
+    <!-- Candy Canes Decoration -->
+    <div class="candy-canes">
+        <div class="candy-cane candy-cane-left">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="candy-cane candy-cane-left candy-cane-2">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="candy-cane candy-cane-left candy-cane-3">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="candy-cane candy-cane-right">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="candy-cane candy-cane-right candy-cane-2">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="candy-cane candy-cane-right candy-cane-3">
+            <div class="candy-cane-shape">
+                <div class="candy-cane-bow">
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
+                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
+                    <div class="candy-cane-bow-center"></div>
+                    <div class="candy-cane-bow-tail"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="snowflakes">
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+            </div>
+            <h2 class="hero-title">Weihnachten im LA OLA<br>wo das Chaos Tradition ist,<br>der Wahnsinn zum guten Ton gehört,<br>und das Team trotz allem zusammenhält! 🎄💥🏊‍♂️🎅🔥</h2>
+            <p class="hero-subtitle">Öffne jeden Tag ein Türchen und entdecke die Geschichte</p>
+            <button class="scroll-btn" onclick="scrollToStory()">
+                <span>Zum Adventskalender</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Advent Calendar Section -->
+    <section id="geschichte" class="advent-section">
+        <div class="advent-container">
+            <h2 class="advent-title">🎅 Adventskalender 2024</h2>
+            <p class="advent-subtitle">Öffne die Türchen und entdecke die Geschichte Tag für Tag</p>
+            
+            <div class="doors-grid" id="doorsGrid">
+                <!-- Türchen werden per JavaScript generiert -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Content Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Türchen 1</h3>
+                <span class="modal-day" id="modalDay"></span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Story content wird hier eingefügt -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Section (Placeholder) -->
+    <section id="quiz" class="quiz-section">
+        <div class="quiz-container">
+            <h2 class="quiz-title">🎯 Weihnachtsquiz</h2>
+            <p class="quiz-placeholder">Das Quiz wird hier bald verfügbar sein!</p>
+            <div class="quiz-coming-soon">
+                <div class="snowflake-small">❄</div>
+                <p>Bald verfügbar</p>
+                <div class="snowflake-small">❄</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Frohe Weihnachten! 🎄</p>
+        <p class="footer-note">Eine Geschichte über totales Chaos, explodierende Badehosen und fliegende Lebkuchen im LA OLA</p>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="quiz.js"></script>
+</body>
+</html>
