@@ -5,10 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Weihnachten im LA OLA - wo das Chaos Tradition ist, der Wahnsinn zum guten Ton gehört, und das Team trotz allem zusammenhält!">
     <title>Weihnachten im LA OLA - Das große Weihnachtsdesaster</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://weihnachten-laola.netlify.app/">
+    <meta property="og:title" content="Weihnachten im LA OLA - Das große Weihnachtsdesaster 🎄">
+    <meta property="og:description" content="Eine Geschichte über totales Chaos, explodierende Badehosen und fliegende Lebkuchen im LA OLA. Öffne jeden Tag ein Türchen und entdecke die verrückteste Weihnachtsgeschichte!">
+    <meta property="og:image" content="https://weihnachten-laola.netlify.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Weihnachten im LA OLA - Das große Weihnachtsdesaster">
+    <meta property="og:locale" content="de_DE">
+    <meta property="og:site_name" content="LA OLA Weihnachtskalender">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://weihnachten-laola.netlify.app/">
+    <meta name="twitter:title" content="Weihnachten im LA OLA - Das große Weihnachtsdesaster 🎄">
+    <meta name="twitter:description" content="Eine Geschichte über totales Chaos, explodierende Badehosen und fliegende Lebkuchen im LA OLA.">
+    <meta name="twitter:image" content="https://weihnachten-laola.netlify.app/og-image.png">
+    <meta name="twitter:image:alt" content="Weihnachten im LA OLA - Das große Weihnachtsdesaster">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 </head>
 <body style="scroll-behavior: auto;">
     <!-- Header -->
@@ -22,32 +47,9 @@
         </div>
     </header>
 
-    <!-- Global Snowflakes -->
-    <div class="global-snowflakes" id="globalSnowflakes"></div>
-
-    <!-- Candy Canes Decoration -->
+    <!-- Candy Canes Decoration (reduced for performance) -->
     <div class="candy-canes">
         <div class="candy-cane candy-cane-left">
-            <div class="candy-cane-shape">
-                <div class="candy-cane-bow">
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
-                    <div class="candy-cane-bow-center"></div>
-                    <div class="candy-cane-bow-tail"></div>
-                </div>
-            </div>
-        </div>
-        <div class="candy-cane candy-cane-left candy-cane-2">
-            <div class="candy-cane-shape">
-                <div class="candy-cane-bow">
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
-                    <div class="candy-cane-bow-center"></div>
-                    <div class="candy-cane-bow-tail"></div>
-                </div>
-            </div>
-        </div>
-        <div class="candy-cane candy-cane-left candy-cane-3">
             <div class="candy-cane-shape">
                 <div class="candy-cane-bow">
                     <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
@@ -67,41 +69,11 @@
                 </div>
             </div>
         </div>
-        <div class="candy-cane candy-cane-right candy-cane-2">
-            <div class="candy-cane-shape">
-                <div class="candy-cane-bow">
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
-                    <div class="candy-cane-bow-center"></div>
-                    <div class="candy-cane-bow-tail"></div>
-                </div>
-            </div>
-        </div>
-        <div class="candy-cane candy-cane-right candy-cane-3">
-            <div class="candy-cane-shape">
-                <div class="candy-cane-bow">
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-left"></div>
-                    <div class="candy-cane-bow-loop candy-cane-bow-loop-right"></div>
-                    <div class="candy-cane-bow-center"></div>
-                    <div class="candy-cane-bow-tail"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <div class="snowflakes">
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-                <div class="snowflake">❄</div>
-            </div>
             <h2 class="hero-title">Weihnachten im LA OLA<br>wo das Chaos Tradition ist,<br>der Wahnsinn zum guten Ton gehört,<br>und das Team trotz allem zusammenhält! 🎄💥🏊‍♂️🎅🔥</h2>
             <p class="hero-subtitle">Öffne jeden Tag ein Türchen und entdecke die Geschichte</p>
             <button class="scroll-btn" onclick="scrollToStory()">
@@ -145,9 +117,7 @@
             <h2 class="quiz-title">🎯 Weihnachtsquiz</h2>
             <p class="quiz-placeholder">Das Quiz wird hier bald verfügbar sein!</p>
             <div class="quiz-coming-soon">
-                <div class="snowflake-small">❄</div>
                 <p>Bald verfügbar</p>
-                <div class="snowflake-small">❄</div>
             </div>
         </div>
     </section>
@@ -158,7 +128,7 @@
         <p class="footer-note">Eine Geschichte über totales Chaos, explodierende Badehosen und fliegende Lebkuchen im LA OLA</p>
     </footer>
 
-    <script type="module" src="script.js"></script>
-    <script type="module" src="quiz.js"></script>
+    <script type="module" src="script.js" defer></script>
+    <script type="module" src="quiz.js" defer></script>
 </body>
 </html>

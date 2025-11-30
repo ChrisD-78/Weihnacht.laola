@@ -442,11 +442,24 @@ Darunter schrieb das gesamte Team:
 // Initialize calendar
 async function initCalendar() {
     const doorsGrid = document.getElementById('doorsGrid');
-    const today = new Date().getDate();
-    const currentMonth = new Date().getMonth();
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth(); // 0-11, Dezember = 11
+    const currentYear = now.getFullYear();
     
-    // Only show calendar in December
-    const maxDay = (currentMonth === 11) ? Math.min(today, 24) : 24;
+    // Bestimme das maximale Türchen basierend auf dem aktuellen Datum
+    // Nur im Dezember: Türchen 1 am 1.12, Türchen 2 am 2.12, etc.
+    let maxDay = 0;
+    if (currentMonth === 11) { // Dezember
+        // Im Dezember: Nur Türchen bis zum aktuellen Tag erlauben
+        maxDay = Math.min(currentDay, 24);
+    } else if (currentMonth === 10 && currentDay >= 25) {
+        // Ende November: Erlaube alle Türchen für Tests (optional)
+        maxDay = 24;
+    } else {
+        // Außerhalb des Advents: Keine Türchen öffnen
+        maxDay = 0;
+    }
     
     // Get opened doors from API (with localStorage fallback)
     let openedDoors = [];
@@ -465,7 +478,10 @@ async function initCalendar() {
         door.dataset.day = i;
         
         const isOpen = openedDoors.includes(i);
-        const canOpen = i <= maxDay;
+        // Türchen kann geöffnet werden wenn:
+        // 1. Es bereits geöffnet wurde (kann immer wieder geöffnet werden)
+        // 2. Oder es ist das aktuelle oder ein vorheriges Türchen (i <= maxDay)
+        const canOpen = isOpen || i <= maxDay;
         
         if (isOpen) {
             door.classList.add('open');
@@ -501,14 +517,32 @@ async function initCalendar() {
             </div>
         `;
         
-        if (canOpen) {
+        if (canOpen || isOpen) {
+            // Bereits geöffnete Türchen können immer wieder geöffnet werden
+            // Neue Türchen nur wenn sie freigeschaltet sind
             door.addEventListener('click', () => {
                 if (isOpen) {
                     // If already open, show full content in modal
                     showStoryContent(i);
                 } else {
-                    // If closed, open it
-                    openDoor(i);
+                    // Prüfe ob das Türchen heute geöffnet werden darf
+                    const now = new Date();
+                    const currentDay = now.getDate();
+                    const currentMonth = now.getMonth();
+                    
+                    if (currentMonth === 11 && i === currentDay) {
+                        // Im Dezember: Nur das Türchen des aktuellen Tages öffnen
+                        openDoor(i);
+                    } else if (currentMonth === 11 && i < currentDay) {
+                        // Im Dezember: Bereits vergangene Türchen können auch geöffnet werden
+                        openDoor(i);
+                    } else if (currentMonth !== 11) {
+                        // Außerhalb des Dezembers: Keine neuen Türchen öffnen
+                        return;
+                    } else {
+                        // Türchen ist noch nicht freigeschaltet
+                        return;
+                    }
                 }
             });
         }
@@ -621,76 +655,6 @@ window.addEventListener('scroll', () => {
     lastScroll = currentScroll;
 });
 
-// Create global snowflakes
-function createGlobalSnowflakes() {
-    const container = document.getElementById('globalSnowflakes');
-    if (!container) {
-        console.error('Global snowflakes container not found');
-        return;
-    }
-    
-    // Clear any existing snowflakes
-    container.innerHTML = '';
-    
-    const snowflakeCount = 20; // Weniger Schneeflocken
-    const snowflakeIcons = ['❄', '❅', '❆', '❄', '❅'];
-    const viewportHeight = window.innerHeight || 1000;
-    
-    for (let i = 0; i < snowflakeCount; i++) {
-        const snowflake = document.createElement('div');
-        snowflake.className = 'global-snowflake';
-        snowflake.textContent = snowflakeIcons[i % snowflakeIcons.length];
-        
-        // Random position and properties
-        const left = Math.random() * 100;
-        const delay = Math.random() * 5;
-        const duration = 8 + Math.random() * 12; // 8-20 seconds
-        const size = 1 + Math.random() * 1.5; // 1-2.5rem
-        const horizontalDrift = -30 + Math.random() * 60; // -30px to 30px
-        
-        // Set base styles
-        snowflake.style.left = `${left}%`;
-        snowflake.style.fontSize = `${size}rem`;
-        snowflake.style.opacity = (0.6 + Math.random() * 0.4).toString();
-        
-        // Create unique animation for each snowflake using top property
-        const animationName = `snowfall-${i}`;
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ${animationName} {
-                0% {
-                    top: -50px;
-                    left: ${left}%;
-                    transform: translateX(0px) rotate(0deg);
-                    opacity: 0;
-                }
-                5% {
-                    opacity: 0.8;
-                }
-                90% {
-                    opacity: 0.8;
-                }
-                100% {
-                    top: ${viewportHeight + 50}px;
-                    left: ${left}%;
-                    transform: translateX(${horizontalDrift}px) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-            .global-snowflake[data-index="${i}"] {
-                animation: ${animationName} ${duration}s linear infinite, sparkle 3s ease-in-out infinite !important;
-                animation-delay: ${delay}s !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        snowflake.setAttribute('data-index', i);
-        container.appendChild(snowflake);
-    }
-    
-    console.log(`Created ${snowflakeCount} global snowflakes with animations`);
-}
-
 // Handle navigation links
 function setupNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
@@ -726,40 +690,53 @@ function handleInitialScroll() {
 
 // Modal close handlers
 document.addEventListener('DOMContentLoaded', () => {
-    // Force page to top on load
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    
-    initCalendar();
-    createGlobalSnowflakes();
-    setupNavigation();
-    
-    // Initialize quiz system - wait a bit for quiz.js to load
-    setTimeout(() => {
-        if (typeof initQuiz === 'function') {
-            initQuiz();
-        } else {
-            // If quiz.js hasn't loaded yet, try again
-            setTimeout(() => {
-                if (typeof initQuiz === 'function') {
-                    initQuiz();
-                }
-            }, 500);
-        }
-    }, 100);
-    
-    // Ensure we stay at top
-    setTimeout(() => {
+    // Use requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
         window.scrollTo(0, 0);
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
-    }, 10);
+    });
+    
+    initCalendar();
+    setupNavigation();
+    
+    // Initialize quiz system - lazy load when needed
+    // Quiz wird erst geladen wenn der User zum Quiz-Bereich scrollt
+    let quizInitialized = false;
+    const initQuizLazy = () => {
+        if (!quizInitialized && typeof initQuiz === 'function') {
+            initQuiz();
+            quizInitialized = true;
+        }
+    };
+    
+    // Lazy load quiz when quiz section is visible
+    const quizObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                initQuizLazy();
+                quizObserver.disconnect();
+            }
+        });
+    }, { rootMargin: '200px' });
+    
+    const quizSection = document.getElementById('quiz');
+    if (quizSection) {
+        quizObserver.observe(quizSection);
+    }
+    
+    // Fallback: Initialize quiz after 2 seconds if not already initialized
+    setTimeout(() => {
+        if (!quizInitialized && typeof initQuiz === 'function') {
+            initQuiz();
+            quizInitialized = true;
+        }
+    }, 2000);
     
     // Enable smooth scrolling after page is fully loaded
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         document.body.classList.add('loaded');
-    }, 500);
+    });
     
     // Add event listener to scroll button as fallback
     const scrollBtn = document.querySelector('.scroll-btn');

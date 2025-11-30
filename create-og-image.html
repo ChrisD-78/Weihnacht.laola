@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #ff0000 0%, #00ff00 50%, #ffd700 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 2;
+            padding: 60px;
+        }
+        
+        .title {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.9),
+                0 0 60px rgba(255, 215, 0, 0.5),
+                0 4px 15px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            line-height: 1.1;
+            letter-spacing: -2px;
+        }
+        
+        .subtitle {
+            font-size: 42px;
+            color: #ffffff;
+            text-shadow: 
+                0 0 20px rgba(0, 0, 0, 0.8),
+                0 0 40px rgba(255, 215, 0, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.6);
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .emoji {
+            font-size: 140px;
+            margin: 10px 0 20px 0;
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 60px rgba(255, 215, 0, 0.6));
+            line-height: 1;
+        }
+        
+        .description {
+            font-size: 32px;
+            color: #ffffff;
+            text-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(255, 215, 0, 0.3),
+                0 2px 6px rgba(0, 0, 0, 0.5);
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        
+        .decoration {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.25;
+            z-index: 1;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .decoration:nth-child(1) { 
+            top: 40px; 
+            left: 40px; 
+            animation-delay: 0s;
+        }
+        .decoration:nth-child(2) { 
+            top: 40px; 
+            right: 40px; 
+            animation-delay: 1.5s;
+        }
+        .decoration:nth-child(3) { 
+            bottom: 40px; 
+            left: 40px; 
+            animation-delay: 3s;
+        }
+        .decoration:nth-child(4) { 
+            bottom: 40px; 
+            right: 40px; 
+            animation-delay: 4.5s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration">🎄</div>
+    <div class="decoration">🎅</div>
+    <div class="decoration">🏊‍♂️</div>
+    <div class="decoration">💥</div>
+    
+    <div class="container">
+        <div class="emoji">🎄💥🏊‍♂️</div>
+        <h1 class="title">Weihnachten im LA OLA</h1>
+        <p class="subtitle">Das große Weihnachtsdesaster</p>
+        <p class="description">Wo das Chaos Tradition ist, der Wahnsinn zum guten Ton gehört, und das Team trotz allem zusammenhält!</p>
+    </div>
+</body>
+</html>
+
