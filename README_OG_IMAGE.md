@@ -36,3 +36,4 @@ Falls du Netlify verwendest, kannst du auch eine Serverless Function erstellen, 
 
 Die Meta-Tags sind bereits in `index.html` eingefügt und verweisen auf `og-image.png`.
 
+

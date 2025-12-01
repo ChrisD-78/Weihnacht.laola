@@ -47,3 +47,4 @@ CREATE INDEX IF NOT EXISTS idx_quiz_results_day ON quiz_results(day);
 CREATE INDEX IF NOT EXISTS idx_challenge_results_user_id ON challenge_results(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);
 
+

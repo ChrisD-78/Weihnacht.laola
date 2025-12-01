@@ -867,7 +867,7 @@ function renderQuizDay(day, userDayAnswers) {
 }
 
 // Submit quiz answers
-function submitQuiz(day) {
+async function submitQuiz(day) {
     if (!currentUser) {
         console.error('No user logged in');
         return;
@@ -911,7 +911,7 @@ function submitQuiz(day) {
         }
     });
     
-    // Save answers
+    // Save answers lokal (für UI und Ranking im Browser)
     if (!userAnswers[currentUser.id]) {
         userAnswers[currentUser.id] = {};
     }
@@ -921,6 +921,20 @@ function submitQuiz(day) {
         date: new Date().toISOString()
     };
     localStorage.setItem('quizAnswers', JSON.stringify(userAnswers));
+    
+    // Zusätzlich: Ergebnisse in Neon-Datenbank speichern
+    try {
+        await Promise.all(
+            dayQuestions.map(q => {
+                const answer = answers[q.id];
+                const is_correct = answer === q.correct;
+                return saveQuizResult(day, q.id, answer, is_correct);
+            })
+        );
+    } catch (error) {
+        console.error('Fehler beim Speichern der Quiz-Ergebnisse in Neon:', error);
+        // UI trotzdem fortsetzen, auch wenn das Speichern fehlschlägt
+    }
     
     // Update points display in header (will recalculate all points)
     updatePointsDisplay();
@@ -1493,6 +1507,13 @@ function handleChallengeUpload(challengeId, input) {
         };
         
         localStorage.setItem('quizChallenges', JSON.stringify(userChallenges));
+        
+        // Zusätzlich: Challenge-Completion in Neon-Datenbank speichern
+        try {
+            saveChallenge(challengeId);
+        } catch (error) {
+            console.error('Fehler beim Speichern der Challenge in Neon:', error);
+        }
         
         // Refresh challenges view
         showChallenges();
