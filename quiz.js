@@ -1,3 +1,5 @@
+import { saveQuizResult, saveChallenge, getRanking } from './api.js';
+
 // Quiz Data - 72 Fragen aufgeteilt in 24 Tage (3 Fragen pro Tag)
 const quizQuestions = [
     // Tag 1 (Fragen 1-3)
@@ -928,7 +930,7 @@ async function submitQuiz(day) {
             dayQuestions.map(q => {
                 const answer = answers[q.id];
                 const is_correct = answer === q.correct;
-                return saveQuizResult(day, q.id, answer, is_correct);
+                return saveQuizResult(day, q.id, answer, is_correct, currentUser.id, currentUser.name);
             })
         );
     } catch (error) {
@@ -976,84 +978,67 @@ function showQuizResults(day, points, questions, userAnswers) {
 }
 
 // Show ranking
-function showRanking() {
-    // Reload data
-    challengeVotes = JSON.parse(localStorage.getItem('challengeVotes') || '{}');
-    
-    // Recalculate points for all users
-    updateAllUserPoints();
-    
-    users = JSON.parse(localStorage.getItem('quizUsers') || '[]');
-    
-    users.forEach(user => {
-        let totalPoints = 0;
-        
-        // Points from quiz answers
-        if (userAnswers[user.id]) {
-            Object.keys(userAnswers[user.id]).forEach(dayKey => {
-                totalPoints += userAnswers[user.id][dayKey].points;
-            });
-        }
-        
-        // Points from challenge wins (only winners get points)
-        challenges.forEach(challenge => {
-            const votes = challengeVotes[challenge.id] || {};
-            const voteCounts = {};
-            
-            Object.keys(votes).forEach(voterId => {
-                const votedFor = votes[voterId];
-                voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
-            });
-            
-            // Find winner
-            let maxVotes = 0;
-            let winnerId = null;
-            Object.keys(voteCounts).forEach(userId => {
-                if (voteCounts[userId] > maxVotes) {
-                    maxVotes = voteCounts[userId];
-                    winnerId = userId;
-                }
-            });
-            
-            // Award points to winner
-            if (winnerId === user.id && maxVotes > 0) {
-                totalPoints += challenge.points;
-            }
-        });
-        
-        user.totalPoints = totalPoints;
-    });
-    
-    localStorage.setItem('quizUsers', JSON.stringify(users));
-    
-    const sortedUsers = [...users].sort((a, b) => b.totalPoints - a.totalPoints);
+async function showRanking() {
     const quizContent = document.getElementById('quizContent');
+    if (!quizContent) return;
     
-    let html = `
+    // Temporäre Ladeanzeige
+    quizContent.innerHTML = `
         <div class="quiz-ranking">
             <h3>🏆 Ranking</h3>
-            <div class="ranking-list">
-    `;
-    
-    sortedUsers.forEach((user, index) => {
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-        const isCurrentUser = user.id === currentUser.id;
-        html += `
-            <div class="ranking-item ${isCurrentUser ? 'current-user' : ''}">
-                <span class="ranking-position">${medal}</span>
-                <span class="ranking-name">${user.name}</span>
-                <span class="ranking-points">${user.totalPoints} Punkte</span>
-            </div>
-        `;
-    });
-    
-    html += `
-            </div>
-            <button class="quiz-btn" onclick="showQuizDay()">Zurück zum Quiz</button>
+            <p class="quiz-message">Lade Ranking aus der Datenbank...</p>
         </div>
     `;
     
-    quizContent.innerHTML = html;
+    try {
+        const ranking = await getRanking();
+        
+        if (!ranking || ranking.length === 0) {
+            quizContent.innerHTML = `
+                <div class="quiz-ranking">
+                    <h3>🏆 Ranking</h3>
+                    <p class="quiz-message">Noch keine Einträge im Ranking vorhanden.</p>
+                    <button class="quiz-btn" onclick="showQuizDay()">Zurück zum Quiz</button>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `
+            <div class="quiz-ranking">
+                <h3>🏆 Ranking</h3>
+                <div class="ranking-list">
+        `;
+        
+        ranking.forEach((row, index) => {
+            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+            const isCurrentUser = currentUser && row.user_id === currentUser.id;
+            html += `
+                <div class="ranking-item ${isCurrentUser ? 'current-user' : ''}">
+                    <span class="ranking-position">${medal}</span>
+                    <span class="ranking-name">${row.name}</span>
+                    <span class="ranking-points">${row.quiz_points} Punkte</span>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+                <button class="quiz-btn" onclick="showQuizDay()">Zurück zum Quiz</button>
+            </div>
+        `;
+        
+        quizContent.innerHTML = html;
+    } catch (error) {
+        console.error('Fehler beim Laden des Rankings:', error);
+        quizContent.innerHTML = `
+            <div class="quiz-ranking">
+                <h3>🏆 Ranking</h3>
+                <p class="quiz-message">Das Ranking konnte nicht geladen werden.</p>
+                <button class="quiz-btn" onclick="showQuizDay()">Zurück zum Quiz</button>
+            </div>
+        `;
+    }
 }
 
 // Show quiz day selection
@@ -1510,7 +1495,7 @@ function handleChallengeUpload(challengeId, input) {
         
         // Zusätzlich: Challenge-Completion in Neon-Datenbank speichern
         try {
-            saveChallenge(challengeId);
+            saveChallenge(challengeId, currentUser.id, currentUser.name);
         } catch (error) {
             console.error('Fehler beim Speichern der Challenge in Neon:', error);
         }

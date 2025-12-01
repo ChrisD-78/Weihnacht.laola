@@ -78,7 +78,7 @@ export async function getQuizResults(day = null) {
   }
 }
 
-export async function saveQuizResult(day, question_id, answer, is_correct) {
+export async function saveQuizResult(day, question_id, answer, is_correct, user_id, user_name) {
   if (useLocalStorage) {
     const key = `quiz_results_${day}`;
     const results = JSON.parse(localStorage.getItem(key) || '[]');
@@ -93,7 +93,7 @@ export async function saveQuizResult(day, question_id, answer, is_correct) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ day, question_id, answer, is_correct }),
+      body: JSON.stringify({ day, question_id, answer, is_correct, user_id, user_name }),
     });
     
     if (!response.ok) throw new Error('Failed to save quiz result');
@@ -122,7 +122,7 @@ export async function getChallenges() {
   }
 }
 
-export async function saveChallenge(challenge_id) {
+export async function saveChallenge(challenge_id, user_id, user_name) {
   if (useLocalStorage) {
     const challenges = JSON.parse(localStorage.getItem('challenges') || '[]');
     if (!challenges.includes(challenge_id)) {
@@ -138,7 +138,7 @@ export async function saveChallenge(challenge_id) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ challenge_id }),
+      body: JSON.stringify({ challenge_id, user_id, user_name }),
     });
     
     if (!response.ok) throw new Error('Failed to save challenge');
@@ -149,5 +149,19 @@ export async function saveChallenge(challenge_id) {
     return false;
   }
 }
+
+// Ranking aus Neon-Datenbank
+export async function getRanking() {
+  try {
+    const response = await fetch(`${API_BASE}/ranking`);
+    if (!response.ok) throw new Error('Failed to fetch ranking');
+    const data = await response.json();
+    return data.ranking || [];
+  } catch (error) {
+    console.error('Error fetching ranking:', error);
+    return [];
+  }
+}
+
 
 

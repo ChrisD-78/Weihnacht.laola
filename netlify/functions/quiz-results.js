@@ -1,12 +1,6 @@
 // Netlify Function: Quiz-Ergebnisse speichern
 const { getDb } = require('./db.js');
 
-function getUserId(event) {
-  const ip = event.headers['x-forwarded-for'] || event.headers['x-nf-client-connection-ip'] || 'unknown';
-  const ua = event.headers['user-agent'] || 'unknown';
-  return `user_${Buffer.from(`${ip}_${ua}`).toString('base64').substring(0, 32)}`;
-}
-
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -25,7 +19,6 @@ exports.handler = async (event, context) => {
 
   try {
     const sql = getDb();
-    const userId = getUserId(event);
 
     if (event.httpMethod === 'GET') {
       // Quiz-Ergebnisse für einen Tag abrufen
@@ -46,11 +39,11 @@ exports.handler = async (event, context) => {
       }
 
       // Alle Ergebnisse abrufen
+      // Für Ranking/Statistik können hier später alle Ergebnisse aggregiert werden
       const allResults = await sql`
-        SELECT day, question_id, answer, is_correct
+        SELECT user_id, day, question_id, answer, is_correct
         FROM quiz_results
-        WHERE user_id = ${userId}
-        ORDER BY day ASC, question_id ASC
+        ORDER BY user_id ASC, day ASC, question_id ASC
       `;
       return {
         statusCode: 200,
@@ -61,7 +54,7 @@ exports.handler = async (event, context) => {
 
     if (event.httpMethod === 'POST') {
       // Quiz-Antwort speichern
-      const { day, question_id, answer, is_correct } = JSON.parse(event.body);
+      const { day, question_id, answer, is_correct, user_id, user_name } = JSON.parse(event.body);
 
       if (!day || day < 1 || day > 24) {
         return {
@@ -71,9 +64,21 @@ exports.handler = async (event, context) => {
         };
       }
 
+      // Fallback falls keine user_id übergeben wurde
+      const finalUserId = user_id || 'anonymous';
+      const finalUserName = user_name || 'Unbekannt';
+
+      // User in quiz_users Tabelle speichern/aktualisieren
+      await sql`
+        INSERT INTO quiz_users (user_id, name)
+        VALUES (${finalUserId}, ${finalUserName})
+        ON CONFLICT (user_id) DO UPDATE SET name = EXCLUDED.name
+      `;
+
+      // Quiz-Ergebnis speichern
       await sql`
         INSERT INTO quiz_results (user_id, day, question_id, answer, is_correct)
-        VALUES (${userId}, ${day}, ${question_id}, ${answer}, ${is_correct})
+        VALUES (${finalUserId}, ${day}, ${question_id}, ${answer}, ${is_correct})
       `;
 
       return {

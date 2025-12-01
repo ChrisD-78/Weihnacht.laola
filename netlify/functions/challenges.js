@@ -1,12 +1,6 @@
 // Netlify Function: Challenge-Ergebnisse verwalten
 const { getDb } = require('./db.js');
 
-function getUserId(event) {
-  const ip = event.headers['x-forwarded-for'] || event.headers['x-nf-client-connection-ip'] || 'unknown';
-  const ua = event.headers['user-agent'] || 'unknown';
-  return `user_${Buffer.from(`${ip}_${ua}`).toString('base64').substring(0, 32)}`;
-}
-
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -25,7 +19,6 @@ exports.handler = async (event, context) => {
 
   try {
     const sql = getDb();
-    const userId = getUserId(event);
 
     if (event.httpMethod === 'GET') {
       // Alle abgeschlossenen Challenges abrufen
@@ -45,7 +38,7 @@ exports.handler = async (event, context) => {
 
     if (event.httpMethod === 'POST') {
       // Challenge als abgeschlossen markieren
-      const { challenge_id } = JSON.parse(event.body);
+      const { challenge_id, user_id, user_name } = JSON.parse(event.body);
 
       if (!challenge_id) {
         return {
@@ -55,9 +48,19 @@ exports.handler = async (event, context) => {
         };
       }
 
+      const finalUserId = user_id || 'anonymous';
+      const finalUserName = user_name || 'Unbekannt';
+
+      // User in quiz_users Tabelle speichern/aktualisieren
+      await sql`
+        INSERT INTO quiz_users (user_id, name)
+        VALUES (${finalUserId}, ${finalUserName})
+        ON CONFLICT (user_id) DO UPDATE SET name = EXCLUDED.name
+      `;
+
       await sql`
         INSERT INTO challenge_results (user_id, challenge_id, completed, completed_at)
-        VALUES (${userId}, ${challenge_id}, TRUE, CURRENT_TIMESTAMP)
+        VALUES (${finalUserId}, ${challenge_id}, TRUE, CURRENT_TIMESTAMP)
         ON CONFLICT (user_id, challenge_id) 
         DO UPDATE SET completed = TRUE, completed_at = CURRENT_TIMESTAMP
       `;
