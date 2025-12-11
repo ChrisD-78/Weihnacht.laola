@@ -444,22 +444,12 @@ async function initCalendar() {
     const doorsGrid = document.getElementById('doorsGrid');
     const now = new Date();
     const currentDay = now.getDate();
-    const currentMonth = now.getMonth(); // 0-11, Dezember = 11
+    const currentMonth = now.getMonth(); // 0-11
     const currentYear = now.getFullYear();
     
-    // Bestimme das maximale Türchen basierend auf dem aktuellen Datum
-    // Nur im Dezember: Türchen 1 am 1.12, Türchen 2 am 2.12, etc.
-    let maxDay = 0;
-    if (currentMonth === 11) { // Dezember
-        // Im Dezember: Nur Türchen bis zum aktuellen Tag erlauben
-        maxDay = Math.min(currentDay, 24);
-    } else if (currentMonth === 10 && currentDay >= 25) {
-        // Ende November: Erlaube alle Türchen für Tests (optional)
-        maxDay = 24;
-    } else {
-        // Außerhalb des Advents: Keine Türchen öffnen
-        maxDay = 0;
-    }
+    // Freischaltung bis zum heutigen Datum (max. 24)
+    // Beispiel: am 11. eines Monats sind Türchen 1-11 geöffnet
+    const maxDay = Math.min(currentDay, 24);
     
     // Get opened doors from API (with localStorage fallback)
     let openedDoors = [];
@@ -530,15 +520,8 @@ async function initCalendar() {
                     const currentDay = now.getDate();
                     const currentMonth = now.getMonth();
                     
-                    if (currentMonth === 11 && i === currentDay) {
-                        // Im Dezember: Nur das Türchen des aktuellen Tages öffnen
+                    if (i <= currentDay) {
                         openDoor(i);
-                    } else if (currentMonth === 11 && i < currentDay) {
-                        // Im Dezember: Bereits vergangene Türchen können auch geöffnet werden
-                        openDoor(i);
-                    } else if (currentMonth !== 11) {
-                        // Außerhalb des Dezembers: Keine neuen Türchen öffnen
-                        return;
                     } else {
                         // Türchen ist noch nicht freigeschaltet
                         return;
